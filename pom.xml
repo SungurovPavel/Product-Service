@@ -28,13 +28,6 @@
     </scm>
     <properties>
         <java.version>21</java.version>
-
-        <profile.propertyFile>src/main/resources/application.properties</profile.propertyFile>
-        <profile.changeLogFile>src/main/resources/db/changelog/master.xml</profile.changeLogFile>
-
-
-
-
     </properties>
     <dependencies>
         <dependency>

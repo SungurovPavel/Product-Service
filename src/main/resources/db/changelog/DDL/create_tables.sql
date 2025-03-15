@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset Pavel_Sungurov:10
+--changeset sungurov-pb:DDL-1.2
 CREATE TABLE IF NOT EXISTS ecommerce.categories (
     id INT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS ecommerce.categories (
     );
 --rollback DROP TABLE ecommerce.categories;
 
---changeset Pavel_Sungurov:11
+--changeset sungurov-pb:DDL-1.3
 CREATE TABLE IF NOT EXISTS ecommerce.products (
     id INT PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS ecommerce.products (
     );
 --rollback DROP TABLE ecommerce.products;
 
---changeset Pavel_Sungurov:12
+--changeset sungurov-pb:DDL-1.4
 CREATE TABLE IF NOT EXISTS ecommerce.reviews (
     id INT PRIMARY KEY,
     product_id INT NOT NULL REFERENCES ecommerce.products(id),

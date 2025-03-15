@@ -5,26 +5,10 @@
             xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-        <!-- Включаем DCL-скрипты для управления правами доступа -->
-        <include file="DCL/grant_permissions.sql" relativeToChangelogFile="true"/>
-        <include file="DCL/revoke_permissons.sql" relativeToChangelogFile="true"/>
 
-        <!-- Включаем DDL-скрипты для создании схемы, создание/удаление таблиц -->
-        <include file="DDL/create_schema.sql" relativeToChangelogFile="true"/>
+        <include file="DDL/create_role_and_schema.sql" relativeToChangelogFile="true"/>
         <include file="DDL/create_tables.sql" relativeToChangelogFile="true"/>
-        <include file="DDL/drop_tables_and_schema.sql" relativeToChangelogFile="true"/>
+        <include file="DCL/grant_permissions.sql" relativeToChangelogFile="true"/>
 
-        <!-- Включаем DML-скрипты для начального удаления/добавления/изменения данных -->
-        <include file="DML/delete.sql" relativeToChangelogFile="true"/>
-        <include file="DML/insert.sql" relativeToChangelogFile="true"/>
-        <include file="DML/update.sql" relativeToChangelogFile="true"/>
-
-        <!-- Включаем DQL-скрипты для получения данных -->
-        <include file="DQL/select.sql" relativeToChangelogFile="true"/>
-
-
-        <!-- Включаем TCL-скрипты для управления транзакциями  -->
-        <include file="TCL/commit_transaction.sql" relativeToChangelogFile="true"/>
-        <include file="TCL/rollback_transaction.sql" relativeToChangelogFile="true"/>
     </databaseChangeLog>
 
