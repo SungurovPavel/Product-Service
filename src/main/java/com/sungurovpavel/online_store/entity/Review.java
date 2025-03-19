@@ -4,6 +4,9 @@ package com.sungurovpavel.online_store.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
 
@@ -11,6 +14,7 @@ import java.util.Date;
 @Setter
 @Getter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name ="reviews")
 public class Review {
 
@@ -35,12 +39,12 @@ public class Review {
     @Column(name = "rating")
     private int rating;
 
-
-    @Column(name = "created_at")
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
     private Date created_at;
 
 
-
+    @LastModifiedDate
     @Column(name = "updated_at")
     private Date updated_at;
 
@@ -50,23 +54,13 @@ public class Review {
     public Review() {
     }
 
-    public Review(int user_id, String review_text, int rating, Date created_at, Date updated_at) {
+    public Review(int id, Product product, int user_id, String review_text, int rating, Date created_at, Date updated_at) {
+        this.id = id;
+        this.product = product;
         this.user_id = user_id;
         this.review_text = review_text;
         this.rating = rating;
         this.created_at = created_at;
         this.updated_at = updated_at;
-    }
-
-    @Override
-    public String toString() {
-        return "Review{" +
-                "id=" + id +
-                ", user_id=" + user_id +
-                ", review_text='" + review_text + '\'' +
-                ", rating=" + rating +
-                ", created_at=" + created_at +
-                ", updated_at=" + updated_at +
-                '}';
     }
 }
