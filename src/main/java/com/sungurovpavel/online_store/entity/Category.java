@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.util.Date;
 import java.util.List;
 
@@ -18,12 +17,10 @@ import java.util.List;
 @Table(name ="Categories")
 public class Category {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-
 
     @Column(name = "name")
     private String name;
@@ -32,12 +29,12 @@ public class Category {
     private String description;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private Date created_at;
+    @Column(name = "createdAt", updatable = false)
+    private Date createdAt;
 
     @LastModifiedDate
-    @Column(name = "updated_at")
-    private Date updated_at;
+    @Column(name = "updatedAt")
+    private Date updatedAt;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
     private List<Product> products;
@@ -45,12 +42,12 @@ public class Category {
     public Category() {
     }
 
-    public Category(int id, String name, String description, Date created_at, Date updated_at, List<Product> products) {
+    public Category(int id, String name, String description, Date createdAt, Date updatedAt, List<Product> products) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.products = products;
     }
 }

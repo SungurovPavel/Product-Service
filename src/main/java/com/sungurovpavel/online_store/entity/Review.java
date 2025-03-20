@@ -18,49 +18,42 @@ import java.util.Date;
 @Table(name ="reviews")
 public class Review {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
     @ManyToOne (cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "productId")
     private  Product product;
 
-    @Column(name = "user_id")
-    private int user_id;
+    @Column(name = "userId")
+    private int userId;
 
-
-    @Column(name = "review_text")
-    private String review_text;
-
+    @Column(name = "reviewText")
+    private String reviewText;
 
     @Column(name = "rating")
     private int rating;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private Date created_at;
-
+    @Column(name = "createdAt", updatable = false)
+    private Date createdAt;
 
     @LastModifiedDate
-    @Column(name = "updated_at")
-    private Date updated_at;
-
-
-
+    @Column(name = "updatedAt")
+    private Date updatedAt;
 
     public Review() {
     }
 
-    public Review(int id, Product product, int user_id, String review_text, int rating, Date created_at, Date updated_at) {
+    public Review(int id, Product product, int userId, String reviewText, int rating, Date createdAt, Date updatedAt) {
         this.id = id;
         this.product = product;
-        this.user_id = user_id;
-        this.review_text = review_text;
+        this.userId = userId;
+        this.reviewText = reviewText;
         this.rating = rating;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }
