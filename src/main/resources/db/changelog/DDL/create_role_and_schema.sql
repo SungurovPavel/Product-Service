@@ -6,5 +6,5 @@ CREATE SCHEMA IF NOT EXISTS ecommerce;
 
 
 --changeset sungurov-pb:DDL-1.1
-CREATE ROLE product_service_user;
---rollback DROP ROLE IF EXISTS product_service_user;
+CREATE ROLE productServiceUser;
+--rollback DROP ROLE IF EXISTS productServiceUser;
