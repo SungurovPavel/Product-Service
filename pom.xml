@@ -10,10 +10,10 @@
     </parent>
 
     <groupId>com.sungurovpavel</groupId>
-    <artifactId>online_store</artifactId>
+    <artifactId>product_service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>online_store</name>
-    <description>online_store</description>
+    <name>product_service</name>
+    <description>product_service</description>
 
     <properties>
         <java.version>21</java.version>

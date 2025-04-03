@@ -13,8 +13,8 @@ public class ProductDTO {
      String name;
      String description;
      int price;
-     CategoryDTO category; // Вложенный DTO
-     List<ReviewDTO> reviews; // Вложенный DTO
+     CategoryDTO category;
+     List<ReviewDTO> reviews;
      Date createdAt;
      Date updatedAt;
 }

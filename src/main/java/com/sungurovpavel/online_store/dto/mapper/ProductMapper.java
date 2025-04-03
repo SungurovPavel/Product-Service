@@ -11,23 +11,18 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 
-    // Преобразования Product в ProductDTO
     @Mapping(target = "category", source = "category")
     @Mapping(target = "reviews", source = "reviews")
     ProductDTO productToDto(Product product);
 
     List<ProductDTO> toDtoList(List<Product> products);
 
-    // Преобразование Category в CategoryDTO
     CategoryDTO categoryToDto(Category category);
 
-    // Преобразование Review в ReviewDTO
     ReviewDTO reviewToDto(Review review);
-
 
     @Mapping(target = "reviews", ignore = true)
     Product toEntity(ProductDTO productDTO);
