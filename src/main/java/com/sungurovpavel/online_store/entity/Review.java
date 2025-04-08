@@ -1,53 +1,56 @@
 package com.sungurovpavel.online_store.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
+import java.util.UUID;
 
 
 @Setter
 @Getter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name ="reviews")
+@Table(name ="reviews", schema = "ecommerce")
 public class Review {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
 
-    @ManyToOne (cascade = CascadeType.ALL)
-    @JoinColumn(name = "productId")
+    @ManyToOne (cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH},
+            fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
     private  Product product;
 
-    @Column(name = "userId")
-    private int userId;
+    @Column(name = "userid")
+    private UUID userId;
 
-    @Column(name = "reviewText")
+    @Column(name = "review_text")
     private String reviewText;
 
     @Column(name = "rating")
     private int rating;
 
     @CreatedDate
-    @Column(name = "createdAt", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private Date createdAt;
 
     @LastModifiedDate
-    @Column(name = "updatedAt")
+    @Column(name = "updated_at")
     private Date updatedAt;
 
     public Review() {
     }
 
-    public Review(int id, Product product, int userId, String reviewText, int rating, Date createdAt, Date updatedAt) {
+    public Review(UUID id, Product product, UUID userId, String reviewText, int rating, Date createdAt, Date updatedAt) {
         this.id = id;
         this.product = product;
         this.userId = userId;
