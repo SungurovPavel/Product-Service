@@ -12,5 +12,4 @@ public class ReviewDTO {
     String reviewText;
     int rating;
     Date createdAt;
-    // Не включил Product, чтобы избежать рекурсии
 }

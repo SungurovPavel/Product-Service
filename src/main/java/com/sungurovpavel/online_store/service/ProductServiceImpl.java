@@ -22,48 +22,53 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductDTO> getAllProducts(Pageable pageable) {
-        log.debug("Fetching products page {}, size {}", pageable.getPageNumber(), pageable.getPageSize());
+        log.info("Запрос на получение списка товаров (страница {}, размер {})", pageable.getPageNumber(), pageable.getPageSize());
         Page<Product> products = productRepository.findAll(pageable);
-        log.info("Found {} products on page {}", products.getNumberOfElements(), pageable.getPageNumber());
+        log.debug("Получено {} товаров на странице {}", products.getNumberOfElements(), pageable.getPageNumber());
+        log.info("Список товаров успешно возвращён");
         return products.map(product -> productMapper.productToDto(product));
     }
 
     @Override
     public ProductDTO saveProduct(ProductDTO productDTO) {
-        log.info("Saving product: {}", productDTO.getName());
+        log.info("Сохранение товара: {}", productDTO.getName());
         try {
             Product product = productMapper.toEntity(productDTO);
             Product savedProduct = productRepository.save(product);
-            log.debug("Product saved with ID: {}", savedProduct.getId());
+            log.debug("Товар сохранён: ID={}, название={}", savedProduct.getId(), savedProduct.getName());
+            log.info("Товар успешно сохранён");
             return productMapper.productToDto(savedProduct);
         } catch (Exception e) {
-            log.error("Error saving product: {}", productDTO.getName(), e);
+            log.error("Ошибка при сохранении товара: {}", productDTO.getName(), e);
             throw e;
         }
     }
 
     @Override
     public ProductDTO getProduct(UUID id) {
-        log.debug("Fetching product with ID: {}", id);
+        log.info("Запрос товара по ID: {}", id);
         return productRepository.findById(id)
                 .map(product -> {
-                    log.debug("Found product: {}", product.getName());
+                    log.debug("Товар найден. Детали найденного товара: ID={}, название={}, цена={}",
+                            product.getId(), product.getName(), product.getPrice());
+                    log.info("Товар с ID={} успешно найден", id);
                     return productMapper.productToDto(product);
                 })
                 .orElseThrow(() -> {
-                    log.warn("Product not found with ID: {}", id);
-                    return new EntityNotFoundException("Product not found with id: " + id);
+                    log.error("Товар не найден: ID={}", id);
+                    return new EntityNotFoundException("Товар не найден с id: " + id);
                 });
     }
 
     @Override
     public void deleteProduct(UUID id) {
-        log.info("Deleting product with ID: {}", id);
+        log.info("Удаление товара: ID={}", id);
         try {
             productRepository.deleteById(id);
-            log.debug("Product deleted successfully: {}", id);
+            log.debug("Товар удалён: ID={}", id);
+            log.info("Товар успешно удалён");
         } catch (Exception e) {
-            log.error("Error deleting product with ID: {}", id, e);
+            log.error("Ошибка при удалении товара: ID={}", id, e);
             throw e;
         }
     }
