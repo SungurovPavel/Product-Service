@@ -21,8 +21,31 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
 
     @Override
+    public Page<ProductDTO> getProductsByFilterAndSort(UUID categoryId, Integer minPrice, Integer maxPrice, String searchTerm,
+                                                       String sortType, String sortDirection, Pageable pageable) {
+
+        log.info("Начало фильтрации товаров и сортировки");
+        log.debug("Параметры: categoryId={}, minPrice={}, maxPrice={}, searchTerm='{}', sortType='{}', sortDirection='{}', page={}, size={}",
+                categoryId, minPrice, maxPrice, searchTerm, sortType, sortDirection, pageable.getPageNumber(), pageable.getPageSize());
+        try {
+            Page<Product> products = productRepository.findByFiltersWithSorts(
+                    categoryId, minPrice, maxPrice, searchTerm, sortType, sortDirection, pageable);
+            log.debug("Результаты фильтрации: найдено {} товаров, всего страниц {}",
+                    products.getNumberOfElements(), products.getTotalPages());
+            log.info("Фильтрация товаров и сортировка завершена успешно");
+            return products.map(product -> productMapper.productToDto(product));
+        } catch (Exception e) {
+            log.error("Ошибка при фильтрации и сортировки товаров: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+
+
+    @Override
     public Page<ProductDTO> getAllProducts(Pageable pageable) {
-        log.info("Запрос на получение списка товаров (страница {}, размер {})", pageable.getPageNumber(), pageable.getPageSize());
+        log.info("Запрос на получение списка товаров (страница {}, размер {})", pageable.getPageNumber(),
+                pageable.getPageSize());
         Page<Product> products = productRepository.findAll(pageable);
         log.debug("Получено {} товаров на странице {}", products.getNumberOfElements(), pageable.getPageNumber());
         log.info("Список товаров успешно возвращён");
@@ -72,4 +95,6 @@ public class ProductServiceImpl implements ProductService {
             throw e;
         }
     }
+
+
 }
