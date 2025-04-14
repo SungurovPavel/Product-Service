@@ -40,18 +40,6 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-
-
-    @Override
-    public Page<ProductDTO> getAllProducts(Pageable pageable) {
-        log.info("Запрос на получение списка товаров (страница {}, размер {})", pageable.getPageNumber(),
-                pageable.getPageSize());
-        Page<Product> products = productRepository.findAll(pageable);
-        log.debug("Получено {} товаров на странице {}", products.getNumberOfElements(), pageable.getPageNumber());
-        log.info("Список товаров успешно возвращён");
-        return products.map(product -> productMapper.productToDto(product));
-    }
-
     @Override
     public ProductDTO saveProduct(ProductDTO productDTO) {
         log.info("Сохранение товара: {}", productDTO.getName());

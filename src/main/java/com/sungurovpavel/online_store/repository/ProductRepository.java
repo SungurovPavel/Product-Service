@@ -14,8 +14,6 @@ import java.util.UUID;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
-    @EntityGraph(attributePaths = {"category", "reviews"})
-    List<Product> findAll();
 
     @EntityGraph(attributePaths = {"category", "reviews"})
     Optional<Product> findById(UUID id);

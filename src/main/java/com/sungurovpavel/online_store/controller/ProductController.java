@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,22 +19,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/products")
-    public Page<ProductDTO> getAllProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "50")  int size) {
-
-        Pageable pageable = PageRequest.of(page, size);
-        return productService.getAllProducts(pageable);
-
-    }
-
-    @GetMapping("/products/{id}")
-    public ProductDTO getProduct(@PathVariable UUID id) {
-        return productService.getProduct(id);
-    }
-
-    @GetMapping("/products/filter-and-sort")
-    public Page<ProductDTO> filterAndSortProducts(
+    public Page<ProductDTO> getAllWithFilterAndSortProducts(
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
@@ -52,6 +36,11 @@ public class ProductController {
         Pageable pageable = PageRequest.of(page, size);
         return productService.getProductsByFilterAndSort(categoryId, minPrice, maxPrice, searchTerm,
                 sortType, sortDirection ,pageable);
+    }
+
+    @GetMapping("/products/{id}")
+    public ProductDTO getProduct(@PathVariable UUID id) {
+        return productService.getProduct(id);
     }
 
     @PostMapping("/products")
