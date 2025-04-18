@@ -10,7 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -21,15 +24,20 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
 
     @Override
-    public Page<ProductDTO> getProductsByFilterAndSort(UUID categoryId, Integer minPrice, Integer maxPrice, String searchTerm,
+    public Page<ProductDTO> getProductsByFilterAndSort(List<String> categoryNames, Integer minPrice, Integer maxPrice, String searchTerm,
                                                        String sortType, String sortDirection, Pageable pageable) {
 
         log.info("Начало фильтрации товаров и сортировки");
-        log.debug("Параметры: categoryId={}, minPrice={}, maxPrice={}, searchTerm='{}', sortType='{}', sortDirection='{}', page={}, size={}",
-                categoryId, minPrice, maxPrice, searchTerm, sortType, sortDirection, pageable.getPageNumber(), pageable.getPageSize());
+        log.debug("Параметры: categoryNames={}, minPrice={}, maxPrice={}, searchTerm='{}', sortType='{}', sortDirection='{}', page={}, size={}",
+                categoryNames, minPrice, maxPrice, searchTerm, sortType, sortDirection, pageable.getPageNumber(), pageable.getPageSize());
         try {
+            if (categoryNames != null) {
+                categoryNames = categoryNames.stream()
+                        .map(String::toLowerCase)
+                        .collect(Collectors.toList());
+            }
             Page<Product> products = productRepository.findByFiltersWithSorts(
-                    categoryId, minPrice, maxPrice, searchTerm, sortType, sortDirection, pageable);
+                    categoryNames, minPrice, maxPrice, searchTerm, sortType, sortDirection, pageable);
             log.debug("Результаты фильтрации: найдено {} товаров, всего страниц {}",
                     products.getNumberOfElements(), products.getTotalPages());
             log.info("Фильтрация товаров и сортировка завершена успешно");

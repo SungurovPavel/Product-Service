@@ -24,7 +24,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     */
     @EntityGraph(attributePaths = {"category", "reviews"})
     @Query("SELECT p FROM Product p WHERE " +
-            "(:categoryId IS NULL OR p.category.id = :categoryId) AND " +
+            "(COALESCE(:categoryNames, NULL) IS NULL OR LOWER(p.category.name) IN :categoryNames) AND " +
             "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
             "(:maxPrice IS NULL OR p.price <= :maxPrice) AND " +
             "(:searchTerm IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', CAST(:searchTerm AS string), '%')))" +
@@ -38,7 +38,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             "CASE WHEN :sortType = 'reviews' AND :sortDirection = 'asc' THEN SIZE(p.reviews) END ASC, " +
             "CASE WHEN :sortType = 'reviews' AND :sortDirection = 'desc' THEN SIZE(p.reviews) END DESC " )
     Page<Product> findByFiltersWithSorts(
-            @Param("categoryId") UUID categoryId,
+            @Param("categoryNames") List<String> categoryNames,
             @Param("minPrice") Integer minPrice,
             @Param("maxPrice") Integer maxPrice,
             @Param("searchTerm") String searchTerm,
