@@ -8,8 +8,8 @@ import java.util.List;
 @Builder
 public class ResponseProductDTO {
     List<ProductDTO> products;
-    int totalPages;
-    int currentPage;
-    long totalElements;
-    int pageSize;
+    Integer totalPages;
+    Integer currentPage;
+    Long totalElements;
+    Integer pageSize;
 }

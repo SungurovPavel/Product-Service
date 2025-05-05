@@ -18,10 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @EntityGraph(attributePaths = {"category", "reviews"})
     Optional<Product> findById(UUID id);
 
-    /*
-    Метод для фильтрации (по цене, категории, по совпадению в название) и сортировке (по цене, кол-ву отзывов,
-    рейтингу, новизне). Дефолтная сортировка по кол-ву отзывов и по убыванию (DESC).
-    */
+
     @EntityGraph(attributePaths = {"category", "reviews"})
     @Query("SELECT p FROM Product p WHERE " +
             "(COALESCE(:categoryNames, NULL) IS NULL OR LOWER(p.category.name) IN :categoryNames) AND " +
@@ -36,7 +33,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             "CASE WHEN :sortType = 'newest' AND :sortDirection = 'asc' THEN p.createdAt END ASC, " +
             "CASE WHEN :sortType = 'newest' AND :sortDirection = 'desc' THEN p.createdAt END DESC, " +
             "CASE WHEN :sortType = 'reviews' AND :sortDirection = 'asc' THEN SIZE(p.reviews) END ASC, " +
-            "CASE WHEN :sortType = 'reviews' AND :sortDirection = 'desc' THEN SIZE(p.reviews) END DESC " )
+            "CASE WHEN :sortType = 'reviews' AND :sortDirection = 'desc' THEN SIZE(p.reviews) END DESC ")
     Page<Product> findByFiltersWithSorts(
             @Param("categoryNames") List<String> categoryNames,
             @Param("minPrice") Integer minPrice,
