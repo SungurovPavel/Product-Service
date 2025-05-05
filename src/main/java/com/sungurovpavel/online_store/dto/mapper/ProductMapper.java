@@ -8,7 +8,6 @@ import com.sungurovpavel.online_store.entity.Product;
 import com.sungurovpavel.online_store.entity.Review;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-
 import java.util.List;
 
 @Mapper(componentModel = "spring")

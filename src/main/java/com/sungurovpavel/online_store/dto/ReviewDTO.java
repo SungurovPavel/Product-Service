@@ -10,6 +10,6 @@ import java.util.UUID;
 public class ReviewDTO {
     UUID id;
     String reviewText;
-    int rating;
+    Integer rating;
     Date createdAt;
 }

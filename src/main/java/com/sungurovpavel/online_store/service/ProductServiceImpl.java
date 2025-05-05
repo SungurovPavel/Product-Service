@@ -1,16 +1,21 @@
 package com.sungurovpavel.online_store.service;
 
 import com.sungurovpavel.online_store.dto.ProductDTO;
+import com.sungurovpavel.online_store.dto.ResponseProductDTO;
 import com.sungurovpavel.online_store.dto.mapper.ProductMapper;
-import com.sungurovpavel.online_store.repository.ProductRepository;
 import com.sungurovpavel.online_store.entity.Product;
+import com.sungurovpavel.online_store.exception.InvalidPriceRangeException;
+import com.sungurovpavel.online_store.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -21,12 +26,48 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
 
     @Override
-    public Page<ProductDTO> getAllProducts(Pageable pageable) {
-        log.info("Запрос на получение списка товаров (страница {}, размер {})", pageable.getPageNumber(), pageable.getPageSize());
-        Page<Product> products = productRepository.findAll(pageable);
-        log.debug("Получено {} товаров на странице {}", products.getNumberOfElements(), pageable.getPageNumber());
-        log.info("Список товаров успешно возвращён");
-        return products.map(product -> productMapper.productToDto(product));
+    public ResponseProductDTO getProductsByFilterAndSort(List<String> categoryNames, Integer minPrice, Integer maxPrice,
+                                                         String searchTerm, String sortType, String sortDirection,
+                                                         Pageable pageable) {
+
+        log.info("Начало фильтрации товаров и сортировки");
+        log.debug("Параметры: categoryNames={}, minPrice={}, maxPrice={}, searchTerm='{}', sortType='{}', sortDirection='{}', " +
+                        "page={}, size={}",
+                categoryNames, minPrice, maxPrice, searchTerm, sortType, sortDirection, pageable.getPageNumber(),
+                pageable.getPageSize());
+        try {
+            if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+                throw new InvalidPriceRangeException("minPrice не может быть больше maxPrice");
+            }
+
+            if (categoryNames != null) {
+                categoryNames = categoryNames.stream()
+                        .map(String::toLowerCase)
+                        .collect(Collectors.toList());
+            }
+
+            //StringBuilder sb = new StringBuilder();
+            //sb.append(sortType).append(sortDirection);
+            //String sort = sb.toString();
+
+            Page<Product> products = productRepository.findByFiltersWithSorts(
+                    categoryNames, minPrice, maxPrice, searchTerm, sortType, sortDirection, pageable);
+            Page<ProductDTO> productDTOs = products.map(product -> productMapper.productToDto(product));
+            ResponseProductDTO response = ResponseProductDTO.builder()
+                    .products(productDTOs.getContent())
+                    .totalPages(products.getTotalPages())
+                    .currentPage(products.getNumber())
+                    .totalElements(products.getTotalElements())
+                    .pageSize(products.getSize())
+                    .build();
+            log.debug("Результаты фильтрации: найдено {} товаров, всего страниц {}",
+                    products.getNumberOfElements(), products.getTotalPages());
+            log.info("Фильтрация товаров и сортировка завершена успешно");
+            return response;
+        } catch (Exception e) {
+            log.error("Ошибка при фильтрации и сортировки товаров: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override
