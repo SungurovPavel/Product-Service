@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -38,10 +39,8 @@ public class ProductController {
             @AllowedSortType @RequestParam(defaultValue = "reviews") String sortType,
             @AllowedSortDirection @RequestParam(defaultValue = "desc") String sortDirection) {
 
-        Pageable pageable = PageRequest.of(page, size);
-
         return productService.getProductsByFilterAndSort(categoryNames, minPrice, maxPrice, searchTerm, sortType,
-                sortDirection, pageable);
+                sortDirection, page, size);
     }
 
     @GetMapping("/products/{id}")

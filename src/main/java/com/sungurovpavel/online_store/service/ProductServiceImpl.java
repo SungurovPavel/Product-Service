@@ -10,7 +10,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,13 +30,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResponseProductDTO getProductsByFilterAndSort(List<String> categoryNames, Integer minPrice, Integer maxPrice,
                                                          String searchTerm, String sortType, String sortDirection,
-                                                         Pageable pageable) {
+                                                         int page, int size) {
 
         log.info("Начало фильтрации товаров и сортировки");
         log.debug("Параметры: categoryNames={}, minPrice={}, maxPrice={}, searchTerm='{}', sortType='{}', sortDirection='{}', " +
                         "page={}, size={}",
-                categoryNames, minPrice, maxPrice, searchTerm, sortType, sortDirection, pageable.getPageNumber(),
-                pageable.getPageSize());
+                categoryNames, minPrice, maxPrice, searchTerm, sortType, sortDirection, page,
+                size);
         try {
             if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
                 throw new InvalidPriceRangeException("minPrice не может быть больше maxPrice");
@@ -46,20 +48,21 @@ public class ProductServiceImpl implements ProductService {
                         .collect(Collectors.toList());
             }
 
-            //StringBuilder sb = new StringBuilder();
-            //sb.append(sortType).append(sortDirection);
-            //String sort = sb.toString();
+            Sort sort = parseSort(String.join(" ", sortType, sortDirection));
 
             Page<Product> products = productRepository.findByFiltersWithSorts(
-                    categoryNames, minPrice, maxPrice, searchTerm, sortType, sortDirection, pageable);
-            Page<ProductDTO> productDTOs = products.map(product -> productMapper.productToDto(product));
+                    categoryNames, minPrice, maxPrice, searchTerm, PageRequest.of(page, size, sort));
+
+            Page<ProductDTO> productDTOs = products.map(productMapper::productToDto);
+
             ResponseProductDTO response = ResponseProductDTO.builder()
                     .products(productDTOs.getContent())
                     .totalPages(products.getTotalPages())
-                    .currentPage(products.getNumber())
+                    .currentPage(products.getNumber() + 1)
                     .totalElements(products.getTotalElements())
                     .pageSize(products.getSize())
                     .build();
+
             log.debug("Результаты фильтрации: найдено {} товаров, всего страниц {}",
                     products.getNumberOfElements(), products.getTotalPages());
             log.info("Фильтрация товаров и сортировка завершена успешно");
@@ -112,5 +115,17 @@ public class ProductServiceImpl implements ProductService {
             log.error("Ошибка при удалении товара: ID={}", id, e);
             throw e;
         }
+    }
+
+    private static Sort parseSort(String sort) {
+        if (sort == null || sort.trim().isEmpty()) {
+            return Sort.unsorted();
+        }
+        String[] parts = sort.split(" ");
+        String property = parts[0];
+        Sort.Direction direction = parts.length > 1
+                ? Sort.Direction.fromString(parts[1])
+                : Sort.Direction.ASC; // По умолчанию: ASC
+        return Sort.by(direction, property);
     }
 }
