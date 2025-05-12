@@ -1,15 +1,15 @@
 package com.sungurovpavel.online_store.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -52,6 +52,12 @@ public class Product {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
     private List<Review> reviews;
+
+    @Formula("(SELECT COUNT(r.id) FROM ecommerce.reviews r WHERE r.product_id = id)")
+    private Long reviewCount;
+
+    @Formula("(SELECT COALESCE(AVG(r.rating), 0) FROM ecommerce.reviews r WHERE r.product_id = id)")
+    private Double averageRating;
 
     public Product() {
     }
