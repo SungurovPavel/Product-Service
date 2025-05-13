@@ -10,12 +10,12 @@ import java.util.UUID;
 @Value
 @Builder
 public class ProductDTO {
-     UUID id;
-     String name;
-     String description;
-     Integer price;
-     CategoryDTO category;
-     List<ReviewDTO> reviews;
-     Date createdAt;
-     Date updatedAt;
+    UUID id;
+    String name;
+    String description;
+    Integer price;
+    CategoryDTO category;
+    List<ReviewDTO> reviews;
+    Date createdAt;
+    Date updatedAt;
 }
