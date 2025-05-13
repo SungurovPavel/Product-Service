@@ -2,7 +2,11 @@ package com.sungurovpavel.online_store.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import java.lang.annotation.*;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 
 @Target({ElementType.PARAMETER, ElementType.FIELD})
@@ -10,6 +14,8 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = AllowedSortTypeValidator.class)
 public @interface AllowedSortType {
     String message() default "Недопустимый тип сортировки. Доступны только: price, newest, rating, reviews";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

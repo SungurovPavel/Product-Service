@@ -16,7 +16,7 @@ import java.util.UUID;
 @Getter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name ="reviews", schema = "ecommerce")
+@Table(name = "reviews", schema = "ecommerce")
 public class Review {
 
     @Id
@@ -25,10 +25,10 @@ public class Review {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @ManyToOne (cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH},
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH},
             fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    private  Product product;
+    private Product product;
 
     @Column(name = "userid")
     private UUID userId;

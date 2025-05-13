@@ -2,6 +2,7 @@ package com.sungurovpavel.online_store.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
 import java.util.Set;
 
 public class AllowedSortTypeValidator implements ConstraintValidator<AllowedSortType, String> {

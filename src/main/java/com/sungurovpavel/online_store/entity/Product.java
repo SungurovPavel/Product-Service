@@ -19,7 +19,7 @@ import java.util.UUID;
 @Getter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name ="products", schema = "ecommerce")
+@Table(name = "products", schema = "ecommerce")
 public class Product {
 
     @Id

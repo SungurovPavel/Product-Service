@@ -46,25 +46,7 @@ public class ProductServiceImpl implements ProductService {
                         .collect(Collectors.toList());
             }
 
-            String sortField;
-            switch (sortType) {
-                case "reviews":
-                    sortField = "reviewCount";
-                    break;
-                case "rating":
-                    sortField = "averageRating";
-                    break;
-                case "newest":
-                    sortField = "createdAt";
-                    break;
-                case "price":
-                    sortField = "price";
-                    break;
-                default:
-                    sortField = "price";
-            }
-
-            Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
+            Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), selectorSortField(sortType));
 
             Page<Product> products = productRepository.findByFiltersWithSorts(
                     categoryNames, minPrice, maxPrice, searchTerm, PageRequest.of(page, size, sort));
@@ -128,5 +110,26 @@ public class ProductServiceImpl implements ProductService {
             log.error("Ошибка при удалении товара: ID={}", id, e);
             throw e;
         }
+    }
+
+    public static String selectorSortField(String sortType) {
+        String sortField;
+        switch (sortType) {
+            case "reviews":
+                sortField = "reviewCount";
+                break;
+            case "rating":
+                sortField = "averageRating";
+                break;
+            case "newest":
+                sortField = "createdAt";
+                break;
+            case "price":
+                sortField = "price";
+                break;
+            default:
+                sortField = "price";
+        }
+        return sortField;
     }
 }
