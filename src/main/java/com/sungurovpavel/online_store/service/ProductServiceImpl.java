@@ -5,8 +5,8 @@ import com.sungurovpavel.online_store.dto.ResponseProductDTO;
 import com.sungurovpavel.online_store.dto.mapper.ProductMapper;
 import com.sungurovpavel.online_store.entity.Product;
 import com.sungurovpavel.online_store.exception.InvalidPriceRangeException;
+import com.sungurovpavel.online_store.exception.ProductNotFoundException;
 import com.sungurovpavel.online_store.repository.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -77,9 +77,20 @@ public class ProductServiceImpl implements ProductService {
             log.debug("Товар сохранён: ID={}, название={}", savedProduct.getId(), savedProduct.getName());
             log.info("Товар успешно сохранён");
             return productMapper.productToDto(savedProduct);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             log.error("Ошибка при сохранении товара: {}", productDTO.getName(), e);
             throw e;
+        }
+    }
+
+    @Override
+    public ProductDTO saveProduct(UUID id, ProductDTO productDTO) {
+
+        if (!productRepository.existsById(id)) {
+            throw new ProductNotFoundException("Товар не найден с id: " + id);}
+        else {
+            return this.saveProduct(productDTO);
         }
     }
 
@@ -95,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
                 })
                 .orElseThrow(() -> {
                     log.error("Товар не найден: ID={}", id);
-                    return new EntityNotFoundException("Товар не найден с id: " + id);
+                    throw new ProductNotFoundException("Товар не найден с id: " + id);
                 });
     }
 
@@ -110,6 +121,30 @@ public class ProductServiceImpl implements ProductService {
             log.error("Ошибка при удалении товара: ID={}", id, e);
             throw e;
         }
+    }
+
+    @Override
+    public ProductDTO partialUpdateProduct(UUID id, ProductDTO productDTO) {
+        log.info("Частичное обновление товара с ID: {}", id);
+
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Товар не найден с id: " + id));
+
+        if (productDTO.getName() != null) {
+            existingProduct.setName(productDTO.getName());
+        }
+        if (productDTO.getDescription() != null) {
+            existingProduct.setDescription(productDTO.getDescription());
+        }
+        if (productDTO.getPrice() != null) {
+            existingProduct.setPrice(productDTO.getPrice());
+        }
+        if (productDTO.getCategory() != null) {
+            existingProduct.setCategory(productMapper.toEntity(productDTO.getCategory()));
+        }
+
+        Product updatedProduct = productRepository.save(existingProduct);
+        return productMapper.productToDto(updatedProduct);
     }
 
     public static String selectorSortField(String sortType) {

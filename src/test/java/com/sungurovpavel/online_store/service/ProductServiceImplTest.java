@@ -5,8 +5,8 @@ import com.sungurovpavel.online_store.dto.ResponseProductDTO;
 import com.sungurovpavel.online_store.dto.mapper.ProductMapper;
 import com.sungurovpavel.online_store.entity.Product;
 import com.sungurovpavel.online_store.exception.InvalidPriceRangeException;
+import com.sungurovpavel.online_store.exception.ProductNotFoundException;
 import com.sungurovpavel.online_store.repository.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -166,7 +166,7 @@ class ProductServiceImplTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
 
-        assertThrows(EntityNotFoundException.class, () ->
+        assertThrows(ProductNotFoundException.class, () ->
                 productService.getProduct(productId)
         );
         verify(productRepository).findById(productId);

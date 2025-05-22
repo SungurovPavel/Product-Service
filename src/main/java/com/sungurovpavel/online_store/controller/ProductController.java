@@ -84,18 +84,18 @@ public class ProductController {
                                     )
                                     @PathVariable UUID id,
                                     @RequestBody ProductDTO productDTO) {
+
         if (!id.equals(productDTO.getId())) {
             throw new IdMismatchException("ID в пути и ID товара не совпадают");
         }
-        return productService.saveProduct(productDTO);
+        return productService.saveProduct(id, productDTO);
     }
 
     @Operation(
             summary = "Удалить товар",
             description = "Удаляет товар по его ID. После удаления возвращает статус 204 (No Content).",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Товар успешно удален"),
-                    @ApiResponse(responseCode = "404", description = "Товар не найден")
+                    @ApiResponse(responseCode = "204", description = "Товар успешно удален")
             }
     )
     @DeleteMapping("/products/{id}")
@@ -109,5 +109,23 @@ public class ProductController {
             @PathVariable UUID id) {
 
         productService.deleteProduct(id);
+    }
+
+    @Operation(
+            summary = "Частичное обновление товара",
+            description = "Обновляет только указанные поля товара (Name, Description, Price, Category)",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Товар успешно обновлен"),
+                    @ApiResponse(responseCode = "400", description = "Невалидные данные"),
+                    @ApiResponse(responseCode = "404", description = "Товар не найден")
+            }
+    )
+    @PatchMapping("/products/{id}")
+    public ProductDTO partialUpdateProduct(
+            @Parameter(description = "UUID товара", required = true)
+            @PathVariable UUID id,
+            @RequestBody ProductDTO productDTO) {
+
+        return productService.partialUpdateProduct(id, productDTO);
     }
 }
