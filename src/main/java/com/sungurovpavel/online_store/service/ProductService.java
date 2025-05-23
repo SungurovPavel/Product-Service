@@ -1,5 +1,6 @@
 package com.sungurovpavel.online_store.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sungurovpavel.online_store.dto.ProductDTO;
 import com.sungurovpavel.online_store.dto.ResponseProductDTO;
 
@@ -13,7 +14,7 @@ public interface ProductService {
 
     public ProductDTO getProduct(UUID id); // возвращает конкретный товар по его ID
 
-    ProductDTO partialUpdateProduct(UUID id, ProductDTO productDTO);
+    ProductDTO applyPatchToProduct(UUID id, JsonNode patchNode);
 
     public void deleteProduct(UUID id); // удаляет товар по его ID
 

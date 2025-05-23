@@ -1,5 +1,6 @@
 package com.sungurovpavel.online_store.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sungurovpavel.online_store.dto.ProductDTO;
 import com.sungurovpavel.online_store.dto.ResponseProductDTO;
 import com.sungurovpavel.online_store.exception.IdMismatchException;
@@ -112,20 +113,23 @@ public class ProductController {
     }
 
     @Operation(
-            summary = "Частичное обновление товара",
-            description = "Обновляет только указанные поля товара (Name, Description, Price, Category)",
+            summary = "Частичное обновление товара (JSON Patch)",
+            description = "Обновляет товар с помощью JSON Patch (RFC 6902)",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Товар успешно обновлен"),
-                    @ApiResponse(responseCode = "400", description = "Невалидные данные"),
+                    @ApiResponse(responseCode = "400", description = "Невалидный JSON Patch"),
                     @ApiResponse(responseCode = "404", description = "Товар не найден")
             }
     )
-    @PatchMapping("/products/{id}")
+    @PatchMapping(
+            path = "/products/{id}",
+            consumes = "application/json-patch+json"
+    )
     public ProductDTO partialUpdateProduct(
             @Parameter(description = "UUID товара", required = true)
             @PathVariable UUID id,
-            @RequestBody ProductDTO productDTO) {
+            @RequestBody JsonNode patchNode) {
 
-        return productService.partialUpdateProduct(id, productDTO);
+        return productService.applyPatchToProduct(id, patchNode);
     }
 }

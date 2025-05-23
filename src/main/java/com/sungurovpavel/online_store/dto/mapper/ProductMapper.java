@@ -6,6 +6,7 @@ import com.sungurovpavel.online_store.entity.Category;
 import com.sungurovpavel.online_store.entity.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -24,5 +25,10 @@ public interface ProductMapper {
     Product toEntity(ProductDTO productDTO);
 
     Category toEntity(CategoryDTO categoryDTO);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "reviews", ignore = true)
+    @Mapping(target = "category", ignore = true)
+    void updateProductFromDto(ProductDTO productDTO, @MappingTarget Product product);
 
 }
