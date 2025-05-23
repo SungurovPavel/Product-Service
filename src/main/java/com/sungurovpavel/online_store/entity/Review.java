@@ -30,7 +30,7 @@ public class Review {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(name = "userid")
+    @Column(name = "userid", nullable = false)
     private UUID userId;
 
     @Column(name = "review_text")

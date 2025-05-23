@@ -1,19 +1,26 @@
 package com.sungurovpavel.online_store.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.sungurovpavel.online_store.dto.ProductDTO;
 import com.sungurovpavel.online_store.dto.ResponseProductDTO;
 import com.sungurovpavel.online_store.dto.mapper.ProductMapper;
 import com.sungurovpavel.online_store.entity.Product;
 import com.sungurovpavel.online_store.exception.InvalidPriceRangeException;
+import com.sungurovpavel.online_store.exception.ProductNotFoundException;
+import com.sungurovpavel.online_store.exception.ProductUpdateException;
 import com.sungurovpavel.online_store.repository.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,6 +32,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final DefaultSslBundleRegistry defaultSslBundleRegistry;
 
     @Override
     public ResponseProductDTO getProductsByFilterAndSort(List<String> categoryNames, Integer minPrice, Integer maxPrice,
@@ -84,6 +92,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductDTO saveProduct(UUID id, ProductDTO productDTO) {
+
+        if (!productRepository.existsById(id)) {
+            throw new ProductNotFoundException("Товар не найден с id: " + id);
+        } else {
+            return this.saveProduct(productDTO);
+        }
+    }
+
+    @Override
     public ProductDTO getProduct(UUID id) {
         log.info("Запрос товара по ID: {}", id);
         return productRepository.findById(id)
@@ -95,7 +113,7 @@ public class ProductServiceImpl implements ProductService {
                 })
                 .orElseThrow(() -> {
                     log.error("Товар не найден: ID={}", id);
-                    return new EntityNotFoundException("Товар не найден с id: " + id);
+                    throw new ProductNotFoundException("Товар не найден с id: " + id);
                 });
     }
 
@@ -111,6 +129,38 @@ public class ProductServiceImpl implements ProductService {
             throw e;
         }
     }
+
+    @Override
+    public ProductDTO applyPatchToProduct(UUID id, JsonNode patchNode) {
+        log.info("Применение JSON Patch к товару с ID: {}", id);
+        log.debug("Входящий JSON Patch: {}", patchNode);
+        try {
+            Product existingProduct = productRepository.findById(id)
+                    .orElseThrow(() -> new ProductNotFoundException("Товар не найден с id: " + id));
+
+            ProductDTO productDTO = productMapper.productToDto(existingProduct);
+            log.debug("Исходные данные о продукте: {}", productDTO);
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonPatch patch = JsonPatch.fromJson(patchNode);
+            JsonNode patchedNode = patch.apply(mapper.valueToTree(productDTO));
+
+            ProductDTO patchedProductDTO = mapper.treeToValue(patchedNode, ProductDTO.class);
+            log.debug("Исправлены данные о продукте: {}", patchedProductDTO);
+
+            productMapper.updateProductFromDto(patchedProductDTO, existingProduct);
+
+            Product updatedProduct = productRepository.save(existingProduct);
+            log.debug("Продукт успешно обновлен: {}", updatedProduct);
+            return productMapper.productToDto(updatedProduct);
+
+        } catch (JsonPatchException e) {
+            throw new ProductUpdateException("Ошибка применения JSON Patch", e);
+        } catch (IOException e) {
+            throw new ProductUpdateException("Ошибка преобразования JSON", e);
+        }
+    }
+
 
     public static String selectorSortField(String sortType) {
         String sortField;
